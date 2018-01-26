@@ -52,20 +52,6 @@ Camera::Camera(Vector3f eyePoint, Vector3f imagePlaneOrigin, Vector3f u, Vector3
     this->w = w;
 }
 
-void RayTracer::convertToMat(MatrixXf &matrixR, MatrixXf &matrixG, MatrixXf &matrixB, cv::Mat &mat) {
-    cv::Mat matR(matrixR.rows(), matrixR.cols(), CV_32FC1);
-    cv::Mat matG(matrixR.rows(), matrixR.cols(), CV_32FC1);
-    cv::Mat matB(matrixR.rows(), matrixR.cols(), CV_32FC1);
-    std::vector<cv::Mat> src;
-    src.push_back(matR);
-    src.push_back(matG);
-    src.push_back(matB);
-    cv::eigen2cv(matrixR, src[0]);
-    cv::eigen2cv(matrixG, src[1]);
-    cv::eigen2cv(matrixB, src[2]);
-    cv::merge(src, mat);
-}
-
 bool RayTracer::hit(Vector3f startPoint, Vector3f direction, float start, float end, HitInfo &hitInfo) {
     float curStart = start;
     bool hit = false;
@@ -118,11 +104,8 @@ Vector3f RayTracer::rayColor(Vector3f startPoint, Vector3f direction, float star
     }
 }
 
-cv::Mat RayTracer::render(float left, float right, float top, float bottom, size_t horizontalPixel,
-                          size_t verticalPixel) {
-    MatrixXf matR(verticalPixel, horizontalPixel);
-    MatrixXf matG(verticalPixel, horizontalPixel);
-    MatrixXf matB(verticalPixel, horizontalPixel);
+void RayTracer::render(float left, float right, float top, float bottom, size_t horizontalPixel,
+                          size_t verticalPixel, MatrixXf &matrixR, MatrixXf &matrixG, MatrixXf &matrixB) {
 
     // 计算每个像素的颜色
     for (size_t i = 0; i < verticalPixel; ++i) {
@@ -141,15 +124,12 @@ cv::Mat RayTracer::render(float left, float right, float top, float bottom, size
             // 计算像素点的颜色
             Vector3f pixelColor = this->rayColor(this->camera.eyePoint, pixelDirection,
                                                  (pixelPoint - this->camera.eyePoint).dot(pixelDirection), FLT_MAX);
-            matR(i, j) = pixelColor(0);
-            matG(i, j) = pixelColor(1);
-            matB(i, j) = pixelColor(2);
+            matrixR(i, j) = pixelColor(0);
+            matrixG(i, j) = pixelColor(1);
+            matrixB(i, j) = pixelColor(2);
         }
     }
 
-    cv::Mat matRGB(verticalPixel, horizontalPixel, CV_32FC3);
-    this->convertToMat(matR, matG, matB, matRGB);
-    return matRGB;
 }
 
 RayTracer::RayTracer(Scene &s, Camera &c) : scene(s), camera(c) {

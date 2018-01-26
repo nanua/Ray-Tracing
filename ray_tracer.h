@@ -51,8 +51,6 @@ private:
     Scene &scene;
     Camera &camera;
 
-    void convertToMat(MatrixXf &matrixR, MatrixXf &matrixG, MatrixXf &matrixB, cv::Mat &mat);
-
     Vector3f rayColor(Vector3f startPoint, Vector3f direction, float start, float end, int times = 0);
 
     bool hit(Vector3f startPoint, Vector3f direction, float start, float end, HitInfo &hitInfo);
@@ -60,7 +58,8 @@ private:
 public:
     RayTracer(Scene &scene, Camera &camera);
 
-    cv::Mat render(float left, float right, float top, float bottom, size_t horizontalPixel, size_t verticalPixel);
+    void render(float left, float right, float top, float bottom, size_t horizontalPixel, size_t verticalPixel,
+                MatrixXf &matrixR, MatrixXf &matrixG, MatrixXf &matrixB);
 };
 
 
