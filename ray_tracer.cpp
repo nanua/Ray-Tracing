@@ -88,7 +88,7 @@ Vector3f RayTracer::rayColor(Vector3f startPoint, Vector3f direction, float star
         // 设置初始颜色环境光分量
         Vector3f color = this->scene.ambientLightIntensity * hitInfo.surface->ambientColor;
 
-        Surface surface = *hitInfo.surface;
+        Surface *surface = hitInfo.surface;
         Vector3f point = hitInfo.point;
         Vector3f normal = hitInfo.normal;
 
@@ -98,19 +98,19 @@ Vector3f RayTracer::rayColor(Vector3f startPoint, Vector3f direction, float star
             HitInfo shadowHitInfo;
             if (!this->hit(point, -1 * lightSource->direction, POSITION_DELTA, FLT_MAX, shadowHitInfo)) {
                 // 增加漫反射分量
-                color += surface.diffuseColor * lightSource->intensity
+                color += surface->diffuseColor * lightSource->intensity
                          * std::max(static_cast<float>(0), static_cast<float>(normal.dot(lightSource->direction * -1)));
                 // 增加镜面反射分量
                 Vector3f h = ((-1 * direction) + (-1 * lightSource->direction)).normalized();
-                color += surface.specularColor * lightSource->intensity
+                color += surface->specularColor * lightSource->intensity
                          * pow(std::max(static_cast<float>(0), static_cast<float>(normal.dot(h))),
-                               surface.specularParameter);
+                               surface->specularParameter);
             }
         }
         // 增加理想镜面反射分量
         if (times <= MAX_RAY_COLOR_RECURSION) {
             Vector3f r = (direction - 2 * (direction.dot(normal)) * normal).normalized();
-            color += surface.mirrorColor.cwiseProduct(this->rayColor(point, r, POSITION_DELTA, FLT_MAX, times + 1));
+            color += surface->mirrorColor.cwiseProduct(this->rayColor(point, r, POSITION_DELTA, FLT_MAX, times + 1));
         }
         return color;
     } else {
