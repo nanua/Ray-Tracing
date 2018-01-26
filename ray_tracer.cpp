@@ -56,13 +56,13 @@ void RayTracer::convertToMat(MatrixXf &matrixR, MatrixXf &matrixG, MatrixXf &mat
     cv::Mat matR(matrixR.rows(), matrixR.cols(), CV_32FC1);
     cv::Mat matG(matrixR.rows(), matrixR.cols(), CV_32FC1);
     cv::Mat matB(matrixR.rows(), matrixR.cols(), CV_32FC1);
-    cv::eigen2cv(matrixR, matR);
-    cv::eigen2cv(matrixG, matG);
-    cv::eigen2cv(matrixB, matB);
     std::vector<cv::Mat> src;
     src.push_back(matR);
     src.push_back(matG);
     src.push_back(matB);
+    cv::eigen2cv(matrixR, src[0]);
+    cv::eigen2cv(matrixG, src[1]);
+    cv::eigen2cv(matrixB, src[2]);
     cv::merge(src, mat);
 }
 
