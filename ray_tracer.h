@@ -22,12 +22,12 @@ using namespace Eigen;
 class Camera {
 public:
     Vector3f eyePoint;
-    Vector3f imagePlanePoint;
+    Vector3f imagePlaneOrigin;
     Vector3f u, v, w;
 
-    Camera(Vector3f eyePoint, Vector3f imagePlanePoint, Vector3f u, Vector3f v, Vector3f w);
+    Camera(Vector3f eyePoint, Vector3f imagePlaneOrigin, Vector3f u, Vector3f v, Vector3f w);
 
-    Camera(Vector3f imagePlanePoint, Vector3f viewDirection, float focusLength);
+    Camera(Vector3f imagePlaneOrigin, Vector3f viewDirection, float focusLength);
 
     Camera();
 };
@@ -40,8 +40,8 @@ public:
 
 class Scene {
 public:
-    std::vector<Surface &> surfaces;
-    std::vector<LightSource &> lightSources;
+    std::vector<Surface *> surfaces;
+    std::vector<LightSource *> lightSources;
     float ambientLightIntensity;
     Vector3f backgroundColor;
 };
@@ -51,7 +51,7 @@ private:
     Scene &scene;
     Camera &camera;
 
-    void convertToMat(MatrixXf &matrixR, Matrix &matrixG, Matrix &matrixB, cv::Mat &mat);
+    void convertToMat(MatrixXf &matrixR, MatrixXf &matrixG, MatrixXf &matrixB, cv::Mat &mat);
 
     Vector3f rayColor(Vector3f startPoint, Vector3f direction, float start, float end, int times = 0);
 

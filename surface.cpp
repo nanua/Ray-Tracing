@@ -15,38 +15,38 @@ Surface::Surface(Vector3f diffuseColor, Vector3f specularColor, Vector3f ambient
 
 bool Sphere::hit(Vector3f startPoint, Vector3f direction, float start, float end, HitInfo &hitInfo) {
     Vector3f startMinusCenter = startPoint - this->center;
-    float startMinusCenterNorm = startMinusCenter.norm();
-    float directionNorm = direction.norm();
+    float startMinusCenterSquare = startMinusCenter.dot(startMinusCenter);
+    float directionSquare = direction.dot(direction);
     float directionDotSmc = direction.dot(startMinusCenter);
-    float hitPoint;
+    float t;
 
     float discriminant = static_cast<float>(pow(2 * directionDotSmc, 2) -
-                                            4 * (directionNorm) * (startMinusCenterNorm -
-                                                                   pow(this->radius, 2)));
+                                            4 * (directionSquare) * (startMinusCenterSquare -
+                                                                     pow(this->radius, 2)));
 
     if (discriminant < 0) {
         return false;
     } else if (discriminant == 0) {
-        hitPoint = (-1 * directionDotSmc) / directionNorm;
-        if (hitPoint < start || hitPoint > end) {
+        t = (-1 * directionDotSmc) / directionSquare;
+        if (t < start || t > end) {
             return false;
         }
     } else {
-        hitPoint = (-1 * directionDotSmc - discriminant) / directionNorm;
-        if (hitPoint > end) {
+        t = static_cast<float>((-1 * directionDotSmc - pow(discriminant, 0.5)) / directionSquare);
+        if (t > end) {
             return false;
-        } else if (hitPoint < start) {
-            hitPoint = (-1 * directionDotSmc + discriminant / directionNorm);
-            if (hitPoint < start || hitPoint > end) {
+        } else if (t < start) {
+            t = static_cast<float>((-1 * directionDotSmc + pow(discriminant, 0.5) / directionSquare));
+            if (t < start || t > end) {
                 return false;
             }
         }
     }
 
-    hitInfo.t = hitPoint;
-    hitInfo.point = startPoint + hitPoint * direction;
+    hitInfo.t = t;
+    hitInfo.point = startPoint + t * direction;
     hitInfo.normal = (hitInfo.point - this->center).normalized();
-    hitInfo.surface = *this;
+    hitInfo.surface = this;
     hitInfo.surfaceType = 's';
     return true;
 }
@@ -97,7 +97,7 @@ bool Triangle::hit(Vector3f startPoint, Vector3f direction, float start, float e
     }
 
     hitInfo.surfaceType = 't';
-    hitInfo.surface = *this;
+    hitInfo.surface = this;
     hitInfo.point = startPoint + t * direction;
     hitInfo.normal = this->normal;
     hitInfo.t = t;
@@ -124,14 +124,18 @@ Triangle::Triangle(Vector3f v0, Vector3f v1, Vector3f v2, Vector3f diffuseColor,
 }
 
 bool Plane::hit(Vector3f startPoint, Vector3f direction, float start, float end, HitInfo &hitInfo) {
-    float t = (this->point - startPoint).dot(this->normal) / direction.dot(this->normal);
+    float directionDotNormal = direction.dot(this->normal);
+    if (directionDotNormal == 0) {
+        return false;
+    }
+    float t = (this->point - startPoint).dot(this->normal) / directionDotNormal;
     if (t < start || t > end) {
         return false;
     }
     hitInfo.normal = this->normal;
     hitInfo.point = startPoint + direction * t;
     hitInfo.t = t;
-    hitInfo.surface = *this;
+    hitInfo.surface = this;
     hitInfo.surfaceType = 'p';
     return true;
 }
@@ -139,6 +143,11 @@ bool Plane::hit(Vector3f startPoint, Vector3f direction, float start, float end,
 void Plane::boundingBox(BoundingBox &box) {
     box.minPoint.setConstant(FLT_MIN);
     box.maxPoint.setConstant(FLT_MAX);
+    for (int i = 0; i < 3; ++i) {
+        if (this->normal(i) == 0) {
+            box.minPoint(i) = this->point(i);
+        }
+    }
 }
 
 Plane::Plane(Vector3f p, Vector3f n, Vector3f diffuseColor, Vector3f specularColor, Vector3f ambientColor,

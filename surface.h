@@ -19,7 +19,7 @@ class Surface;
  * 存储视觉光线击中点信息的结构体
  */
 struct HitInfo {
-    Surface &surface;  // 击中的Surface的指针
+    Surface *surface;  // 击中的Surface的指针
     char surfaceType;  // 击中的Surface的类型
     Vector3f point;  // 击中的点的位置
     Vector3f normal;  // 击中的点在曲面上的单位法向量
