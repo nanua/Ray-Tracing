@@ -53,11 +53,11 @@ Camera::Camera(Vector3f eyePoint, Vector3f imagePlaneOrigin, Vector3f u, Vector3
 }
 
 bool RayTracer::hit(Vector3f startPoint, Vector3f direction, float start, float end, HitInfo &hitInfo) {
-    float curStart = start;
+    float curEnd = end;
     bool hit = false;
     for (auto c : this->scene.surfaces) {
-        if (c->hit(startPoint, direction, curStart, end, hitInfo)) {
-            curStart = hitInfo.t;
+        if (c->hit(startPoint, direction, start, curEnd, hitInfo)) {
+            curEnd = hitInfo.t;
             hit = true;
         }
     }
