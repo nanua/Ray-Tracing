@@ -8,13 +8,13 @@
 
 #include <stdint-gcc.h>
 #include <eigen/dense>
-#include <opencv2/core/core.hpp>
+#include <opencv2/core.hpp>
 #include <opencv/cxeigen.hpp>
-#include "surface.h"
 #include <cmath>
+#include "surface.h"
 
 #define MAX_RAY_COLOR_RECURSION 5
-#define POSITION_DELTA 1e-3
+#define POSITION_DELTA 1e-2
 
 using namespace Eigen;
 
@@ -58,8 +58,7 @@ private:
 public:
     RayTracer(Scene &scene, Camera &camera);
 
-    void render(float left, float right, float top, float bottom, size_t horizontalPixel, size_t verticalPixel,
-                MatrixXf &matrixR, MatrixXf &matrixG, MatrixXf &matrixB);
+    void render(float left, float right, float bottom, float top, size_t verticalPixel, size_t horizontalPixel, cv::Mat &mat);
 };
 
 

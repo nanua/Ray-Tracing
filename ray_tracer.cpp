@@ -91,6 +91,8 @@ Vector3f RayTracer::rayColor(Vector3f startPoint, Vector3f direction, float star
                 color += surface->specularColor * lightSource->intensity
                          * pow(std::max(static_cast<float>(0), static_cast<float>(normal.dot(h))),
                                surface->specularParameter);
+            } else {
+                this->hit(point, -1 * lightSource->direction, POSITION_DELTA, FLT_MAX, shadowHitInfo);
             }
         }
         // 增加理想镜面反射分量
@@ -104,16 +106,19 @@ Vector3f RayTracer::rayColor(Vector3f startPoint, Vector3f direction, float star
     }
 }
 
-void RayTracer::render(float left, float right, float top, float bottom, size_t horizontalPixel,
-                          size_t verticalPixel, MatrixXf &matrixR, MatrixXf &matrixG, MatrixXf &matrixB) {
+void RayTracer::render(float left, float right, float bottom, float top, size_t verticalPixel,
+                       size_t horizontalPixel, cv::Mat &mat) {
+    MatrixXf matrixR(verticalPixel, horizontalPixel);
+    MatrixXf matrixG(verticalPixel, horizontalPixel);
+    MatrixXf matrixB(verticalPixel, horizontalPixel);
 
     // 计算每个像素的颜色
     for (size_t i = 0; i < verticalPixel; ++i) {
         for (size_t j = 0; j < horizontalPixel; ++j) {
             // 计算该像素的视觉方向
             Vector3f pixelDirection = this->camera.imagePlaneOrigin - this->camera.eyePoint;
-            float u = static_cast<float>(left + ((right - left) * (i + 0.5) / horizontalPixel));
-            float v = static_cast<float>(bottom + ((top - bottom) * (j + 0.5) / verticalPixel));
+            float u = static_cast<float>(left + ((right - left) * (j + 0.5) / horizontalPixel));
+            float v = static_cast<float>(top - ((top - bottom) * (i + 0.5) / verticalPixel));
             pixelDirection += u * this->camera.u;
             pixelDirection += v * this->camera.v;
             pixelDirection.normalize();
@@ -130,6 +135,17 @@ void RayTracer::render(float left, float right, float top, float bottom, size_t 
         }
     }
 
+    cv::Mat matR(verticalPixel, horizontalPixel, CV_32FC1);
+    cv::Mat matG(verticalPixel, horizontalPixel, CV_32FC1);
+    cv::Mat matB(verticalPixel, horizontalPixel, CV_32FC1);
+    std::vector<cv::Mat> matVector;
+    matVector.push_back(matR);
+    matVector.push_back(matG);
+    matVector.push_back(matB);
+    cv::eigen2cv(matrixR, matVector[0]);
+    cv::eigen2cv(matrixG, matVector[1]);
+    cv::eigen2cv(matrixB, matVector[2]);
+    cv::merge(matVector, mat);
 }
 
 RayTracer::RayTracer(Scene &s, Camera &c) : scene(s), camera(c) {

@@ -20,9 +20,9 @@ bool Sphere::hit(Vector3f startPoint, Vector3f direction, float start, float end
     float directionDotSmc = direction.dot(startMinusCenter);
     float t;
 
-    float discriminant = static_cast<float>(pow(2 * directionDotSmc, 2) -
-                                            4 * (directionSquare) * (startMinusCenterSquare -
-                                                                     pow(this->radius, 2)));
+    float discriminant = static_cast<float>(pow(directionDotSmc, 2) -
+                                            (directionSquare) * (startMinusCenterSquare -
+                                                                 pow(this->radius, 2)));
 
     if (discriminant < 0) {
         return false;
