@@ -142,9 +142,9 @@ void RayTracer::render(float left, float right, float bottom, float top, size_t 
     matVector.push_back(matR);
     matVector.push_back(matG);
     matVector.push_back(matB);
-    cv::eigen2cv(matrixR, matVector[0]);
+    cv::eigen2cv(matrixR, matVector[2]);
     cv::eigen2cv(matrixG, matVector[1]);
-    cv::eigen2cv(matrixB, matVector[2]);
+    cv::eigen2cv(matrixB, matVector[0]);
     cv::merge(matVector, mat);
 }
 
