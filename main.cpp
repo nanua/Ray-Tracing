@@ -1,7 +1,7 @@
 #include <Eigen/Dense>
 #include <opencv2/core.hpp>
-#include <opencv/cxeigen.hpp>
-#include <opencv/cv.hpp>
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/highgui.hpp>
 #include "ray_tracer.h"
 #include "surface.h"
 #include <iostream>
@@ -63,7 +63,8 @@ int main(int argc, char** argv)
     RayTracer rayTracer(scene, camera);
     cv::Mat mat(400, 800, CV_32FC3);
     rayTracer.render(-4, 4, -2, 2, 400, 800, mat);
-    cv::namedWindow("Display", CV_WINDOW_NORMAL);
+
+    cv::namedWindow("Display", cv::WINDOW_NORMAL);
     cv::imshow("Display", mat);
     cv::waitKey(0);
 }

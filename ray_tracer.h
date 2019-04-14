@@ -6,10 +6,9 @@
 #define RAY_TRACING_RAY_TRACER_H
 
 
-#include <stdint-gcc.h>
-#include <eigen/dense>
+#include <Eigen/Dense>
 #include <opencv2/core.hpp>
-#include <opencv/cxeigen.hpp>
+#include <opencv2/core/eigen.hpp>
 #include <cmath>
 #include "surface.h"
 

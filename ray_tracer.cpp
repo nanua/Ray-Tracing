@@ -91,8 +91,6 @@ Vector3f RayTracer::rayColor(Vector3f startPoint, Vector3f direction, float star
                 color += surface->specularColor * lightSource->intensity
                          * pow(std::max(static_cast<float>(0), static_cast<float>(normal.dot(h))),
                                surface->specularParameter);
-            } else {
-                this->hit(point, -1 * lightSource->direction, POSITION_DELTA, FLT_MAX, shadowHitInfo);
             }
         }
         // 增加理想镜面反射分量
